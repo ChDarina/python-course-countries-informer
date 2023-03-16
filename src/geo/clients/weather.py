@@ -1,6 +1,7 @@
 """
 Функции для взаимодействия с внешним сервисом-провайдером данных о погоде.
 """
+import logging
 from http import HTTPStatus
 from typing import Optional
 
@@ -8,6 +9,9 @@ import httpx
 
 from app.settings import REQUESTS_TIMEOUT, API_KEY_OPENWEATHER
 from base.clients.base import BaseClient
+from geo.clients.shemas import WeatherInfoDTO
+
+logger = logging.getLogger()
 
 
 class WeatherClient(BaseClient):
@@ -27,14 +31,27 @@ class WeatherClient(BaseClient):
 
             return None
 
-    def get_weather(self, location: str) -> Optional[dict]:
+    def get_weather(self, location: str) -> Optional[WeatherInfoDTO]:
         """
         Получение данных о погоде.
 
         :param location: Город и страна
         :return:
         """
-
-        return self._request(
+        logger.info(location)
+        logger.info(
             f"{self.get_base_url()}?units=metric&q={location}&appid={API_KEY_OPENWEATHER}"
         )
+        if response := self._request(
+            f"{self.get_base_url()}?units=metric&q={location}&appid={API_KEY_OPENWEATHER}"
+        ):
+            return WeatherInfoDTO(
+                temp=response["main"]["temp"],
+                pressure=response["main"]["pressure"],
+                humidity=response["main"]["humidity"],
+                wind_speed=response["wind"]["speed"],
+                description=response["weather"][0]["description"],
+                visibility=response["visibility"],
+                dt=response["dt"],
+                timezone=response["timezone"] // 3600,
+            )
