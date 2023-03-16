@@ -2,6 +2,7 @@
 Описание моделей данных (DTO).
 """
 from typing import Optional
+from datetime import datetime
 
 from pydantic import Field, BaseModel
 
@@ -178,6 +179,9 @@ class WeatherInfoDTO(BaseModel):
             humidity=54,
             wind_speed=4.63,
             description="scattered clouds",
+            visibility=10000,
+            dt=datetime.datetime(2023, 3, 9, 22, 23),
+            timezone=3,
         )
     """
 
@@ -186,6 +190,9 @@ class WeatherInfoDTO(BaseModel):
     humidity: int
     wind_speed: float
     description: str
+    visibility: int
+    dt: datetime
+    timezone: int
 
 
 class LocationInfoDTO(BaseModel):

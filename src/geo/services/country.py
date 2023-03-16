@@ -57,6 +57,11 @@ class CountryService:
         return None
 
     @staticmethod
+    def is_country_code_in_codes(code: str) -> bool:
+        codes = CountryService.get_countries_codes()
+        return codes is not None and code in codes
+
+    @staticmethod
     def get_countries_by_codes(codes: set[str]) -> QuerySet:
         """
         Получение списка стран по их ISO Alpha2 кодам.

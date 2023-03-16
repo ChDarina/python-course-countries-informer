@@ -3,7 +3,11 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
+
+from http import HTTPStatus
+import httpx
+from app.settings import REQUESTS_TIMEOUT
 
 
 class BaseClient(ABC):
@@ -19,7 +23,6 @@ class BaseClient(ABC):
         :return:
         """
 
-    @abstractmethod
     def _request(self, endpoint: str) -> Optional[dict]:
         """
         Формирование и выполнение запроса.
@@ -27,3 +30,11 @@ class BaseClient(ABC):
         :param endpoint:
         :return:
         """
+        with httpx.Client(timeout=REQUESTS_TIMEOUT) as client:
+            headers: dict[str, Any] = {}
+            params: dict[str, Any] = {}
+            response = client.get(endpoint, headers=headers, params=params)
+            if response.status_code == HTTPStatus.OK:
+                return response.json()
+
+            return None

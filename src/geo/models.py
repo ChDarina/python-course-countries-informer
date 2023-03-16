@@ -96,3 +96,57 @@ class City(TimeStampMixin):
         verbose_name = "Город"
         verbose_name_plural = "Города"
         ordering = ["name"]
+
+
+class Currency(TimeStampMixin):
+    """Модель валюты"""
+
+    base = models.CharField(verbose_name="Название валюты", max_length=255)
+    date = models.DateTimeField(verbose_name="Дата запроса")
+
+    def __str__(self) -> str:
+        return f"{self.base=} {self.date=}"
+
+    class Meta:
+        verbose_name = "Валюта"
+
+
+class CurrencyRates(TimeStampMixin):
+    """Модель курса валют"""
+
+    currency = models.ForeignKey(
+        Currency,
+        on_delete=models.PROTECT,
+        related_name="currency",
+        verbose_name="Базовая валюта",
+    )
+    currency_name = models.CharField(verbose_name="Целевая валюта", max_length=255)
+    rate = models.FloatField(verbose_name="Валютный курс")
+
+    def __str__(self) -> str:
+        return f"{self.currency=} {self.currency_name=} {self.rate=}"
+
+
+class Weather(TimeStampMixin):
+    """Модель погоды"""
+
+    city = models.ForeignKey(
+        City,
+        on_delete=models.PROTECT,
+        related_name="city",
+        verbose_name="Город",
+    )
+    temp = models.FloatField(verbose_name="Температура")
+    pressure = models.IntegerField(verbose_name="Давление")
+    humidity = models.IntegerField(verbose_name="Влажность")
+    wind_speed = models.FloatField(verbose_name="Скорость ветра")
+    description = models.CharField(verbose_name="Описание", max_length=255)
+    visibility = models.IntegerField(verbose_name="Видимость")
+    dt = models.DateTimeField(verbose_name="Время")
+    timezone = models.IntegerField(verbose_name="Часовой пояс")
+
+    def __str__(self) -> str:
+        return f"{self.city=} {self.temp=} {self.description=} {self.dt=}"
+
+    class Meta:
+        verbose_name = "Погода"
